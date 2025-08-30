@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Dummy API
+  profiles:
+    active: prod
