@@ -1,5 +1,15 @@
 spring:
-  application:
-    name: Dummy API
-  profiles:
-    active: prod
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Test
+    username: postgres
+    password: Pa$$w0rd
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # or validate/create/create-drop (depending on need)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
