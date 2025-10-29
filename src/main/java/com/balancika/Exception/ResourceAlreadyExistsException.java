@@ -12,7 +12,5 @@ public class ResourceAlreadyExistsException extends RuntimeException {
         this.field = field;
         this.value = value;
     }
-
-
 }
 

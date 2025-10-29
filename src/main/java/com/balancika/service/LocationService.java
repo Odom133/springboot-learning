@@ -137,11 +137,24 @@ public class LocationService {
                 .build();
     }
 
+    // Option 1 for response exception
+    @Transactional
+    public void delete(Long id) {
+        Location entity =locationRepository.findById(id).orElseThrow(() -> new NotFoundException("Location not found id : " +id));
+        locationRepository.delete(entity);
+    }
+
+    /*
+    // Option 2 for response exception
     @Transactional
     public void delete(Long id) {
         Location entity =locationRepository.findById(id).orElseThrow(NotFoundException::new);
         locationRepository.delete(entity);
     }
+
+     */
+
+
 
 
 }

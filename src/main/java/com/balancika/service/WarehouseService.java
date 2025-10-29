@@ -22,15 +22,15 @@ public class WarehouseService {
         return warehouseRepository.findAll()
                 .stream()
                 .map(warehouse -> WarehouseDTO.builder()
-                        .id(warehouse.getId())
-                        .name(warehouse.getName())
-                        .build())
+                .id(warehouse.getId())
+                .name(warehouse.getName())
+                .build())
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public WarehouseDTO getById(Long id) {
-        return warehouseRepository.findById(id).map(WarehouseDTO::new).orElseThrow(NotFoundException::new);
+        return warehouseRepository.findById(id).map(WarehouseDTO::new).orElseThrow(() -> new NotFoundException(id));
     }
 
     @Transactional
