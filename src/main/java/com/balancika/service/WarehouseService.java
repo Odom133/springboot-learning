@@ -1,6 +1,5 @@
 package com.balancika.service;
 
-import com.balancika.Exception.NotFoundException;
 import com.balancika.Exception.ResourceNotFoundException;
 import com.balancika.entity.Province;
 import com.balancika.entity.Warehouse;
@@ -11,6 +10,7 @@ import com.balancika.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,31 +26,37 @@ public class WarehouseService {
     private final ProvinceRepository provinceRepository;
 
     @Transactional(readOnly = true)
-    public List<WarehouseDTO> getAll() {
+    public Page<WarehouseDTO> getAll(Pageable pageable) {
+        Page<Warehouse> warehouses = warehouseRepository.findAll(pageable);
         // fetch all province once to avoid N+1 problem
-        Map<Long, String> provinceMap = provinceRepository.findAll(Pageable.unpaged())
+        Map<Long, String> provinceMap = provinceRepository.findAll()
                 .stream()
                 .collect(Collectors.toMap(Province::getId, Province::getName));
-        return warehouseRepository.findAll()
-                .stream()
+        return  warehouses
                 .map(warehouse -> WarehouseDTO.builder()
                         .id(warehouse.getId())
                         .name(warehouse.getName())
                         .provinceId(warehouse.getProvinceId())
                         .provinceName(provinceMap.getOrDefault(warehouse.getProvinceId(), "Unknow"))
-                        .build()
-                )
-                .toList();
+                        .build());
     }
 
     @Transactional(readOnly = true)
     public WarehouseDTO getById(Long id) {
-        Province province = provinceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
-        String provinceName = provinceRepository.findById(province.getId())
+        // check warehouse not found
+        Warehouse warehouse = warehouseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found ID: "+id));
+        // Map provinceName from Province entity
+        String provinceName = provinceRepository.findById(warehouse.getProvinceId())
                 .map(Province::getName)
                 .orElse("Unknow");
-        return warehouseRepository.findById(id).map(WarehouseDTO::new).orElseThrow(() -> new NotFoundException(id));
+        return WarehouseDTO.builder()
+                .id(warehouse.getId())
+                .name(warehouse.getName())
+                .provinceId(warehouse.getProvinceId())
+                .provinceName(provinceName)
+                .build();
+
 
     }
 
@@ -94,13 +100,13 @@ public class WarehouseService {
     @Transactional
     public WarehouseDTO update(Long id, WarehouseCreateRequest payload) {
 
-        // check warehouse exist
+        // check warehouse not found
         Warehouse warehouse = warehouseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found ID: "+id));
 
         // check province not found
         provinceRepository.findById(payload.getProvinceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Province ID : " + payload.getProvinceId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found ID : " + payload.getProvinceId()));
 
        // check duplicate ( same Name + provinceId )
         boolean duplicate = warehouseRepository.exists(
@@ -138,7 +144,8 @@ public class WarehouseService {
 
     @Transactional
     public void delete(Long id) {
-        Warehouse warehouse = warehouseRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+        Warehouse warehouse = warehouseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found ID: "+id));
         warehouseRepository.delete(warehouse);
     }
 }

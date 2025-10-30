@@ -1,9 +1,6 @@
 package com.balancika.service;
 
-import com.balancika.Exception.LocationExistedException;
-import com.balancika.Exception.LocationNotFoundException;
-import com.balancika.Exception.NotFoundException;
-import com.balancika.Exception.WarehouseNotFoundException;
+import com.balancika.Exception.*;
 import com.balancika.entity.Location;
 import com.balancika.entity.Warehouse;
 import com.balancika.model.dto.LocationDTO;
@@ -66,7 +63,7 @@ public class LocationService {
     public LocationDTO create(LocationCreateRequest payload) {
         // 1. Check warehouse not found
         if (!warehouseRepository.existsById(payload.getWarehouseId())) {
-            throw new WarehouseNotFoundException(payload.getWarehouseId());
+            throw new ResourceNotFoundException("Warehouse not found Id: "+payload.getWarehouseId());
         }
 
         // 2. Check duplicate location (same name + warehouseId)
@@ -105,12 +102,15 @@ public class LocationService {
     public LocationDTO update(Long id, LocationCreateRequest payload) {
         // 1. Check if the location exists
         Location location = locationRepository.findById(id)
-                .orElseThrow(() -> new LocationNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found ID: "+id));
 
-        // 2. check if warehouse exists
+        // 2. check if warehouse exists or ( check warehouse not found )
         boolean warehouseExists = warehouseRepository.existsById(payload.getWarehouseId());
         if (!warehouseExists) {
-            throw new WarehouseNotFoundException(payload.getWarehouseId());
+            throw new ResourceNotFoundException(
+                    String.format("Warehouse not found ID: '%d'",
+                            payload.getWarehouseId())
+                    );
         }
 
         // 3. Check duplicate ( Same name + warehouseId but different ID)
@@ -149,7 +149,8 @@ public class LocationService {
     // Option 1 for response exception
     @Transactional
     public void delete(Long id) {
-        Location entity =locationRepository.findById(id).orElseThrow(() -> new NotFoundException("Location not found id : " +id));
+        Location entity =locationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found id : " +id));
         locationRepository.delete(entity);
     }
 

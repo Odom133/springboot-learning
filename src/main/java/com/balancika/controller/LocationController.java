@@ -22,7 +22,7 @@ public class LocationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public PaginationDTO<LocationDTO> list(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());

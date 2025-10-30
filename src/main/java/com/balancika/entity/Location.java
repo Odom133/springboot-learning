@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
                 )
         },
         indexes = {
-                @Index(name = "warehouse_id", columnList = "warehouseName")
+                @Index(name = "warehouse_id", columnList = "warehouseId")
         }
 )
 @Data

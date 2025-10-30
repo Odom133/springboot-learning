@@ -29,7 +29,7 @@ public class Warehouse {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "province_id", columnDefinition = "DEFAULT 1")
+    @Column(name = "province_id")
     private Long provinceId;
 
 }

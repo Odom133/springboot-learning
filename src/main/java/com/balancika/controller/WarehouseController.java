@@ -1,10 +1,15 @@
 package com.balancika.controller;
 
+import com.balancika.model.dto.PaginationDTO;
 import com.balancika.model.dto.WarehouseDTO;
 import com.balancika.model.request.WarehouseCreateRequest;
 import com.balancika.repository.WarehouseRepository;
 import com.balancika.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +24,17 @@ public class WarehouseController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<WarehouseDTO> getAll() {
-        return warehouseService.getAll();
+    public PaginationDTO<WarehouseDTO> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());
+        Page<WarehouseDTO> result = warehouseService.getAll(pageable);
+
+        return PaginationDTO.<WarehouseDTO>builder()
+                .content(result.getContent())
+                .pageNumber(page)
+                .pageSize(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .build();
     }
 
     @GetMapping("/{id}")

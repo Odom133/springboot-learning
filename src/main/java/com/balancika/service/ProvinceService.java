@@ -1,6 +1,5 @@
 package com.balancika.service;
 
-import com.balancika.Exception.NotFoundException;
 import com.balancika.Exception.ProvinceExistedException;
 import com.balancika.Exception.ResourceNotFoundException;
 import com.balancika.entity.Province;
@@ -8,6 +7,7 @@ import com.balancika.model.dto.ProvinceDTO;
 import com.balancika.model.request.ProvinceCreateRequest;
 import com.balancika.repository.ProvinceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,14 +32,20 @@ public class ProvinceService {
     public ProvinceDTO getById(Long id) {
         return provinceRepository.findById(id)
                 .map(ProvinceDTO::new)
-//                .orElseThrow(NotFoundException::new);
-                .orElseThrow(() -> new NotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found ID: "+id));
     }
 
     @Transactional
     public ProvinceDTO create(ProvinceCreateRequest payload) {
+
+        /*
+        // if you want use ProvinceExistedException
         if (provinceRepository.existsByName(payload.getName())){
             throw new ProvinceExistedException(payload.getName());
+        }
+         */
+        if (provinceRepository.existsByName(payload.getName())){
+            throw new ResourceNotFoundException("Province name already exists: "+payload.getName());
         }
         return new ProvinceDTO(provinceRepository.save(Province.builder()
                 .name(payload.getName())
@@ -50,11 +56,13 @@ public class ProvinceService {
     @Transactional
     public ProvinceDTO update(Long id, ProvinceCreateRequest payload) {
         // check if the province not found
-        Province province = provinceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(payload.getName()));
+        Province province = provinceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found Id: "+id));
         // check duplicate name province
-//        if (provinceRepository.existsByName(payload.getName())){
-//            throw new ProvinceExistedException(payload.getName());
-//        }
+        boolean duplicate = provinceRepository.existsByNameAndIdNot(payload.getName(),id);
+        if (duplicate) {
+            throw new DuplicateKeyException("Duplicate province name: "+ payload.getName());
+        }
         province.setName(payload.getName());
         province.setDescription(payload.getDescription());
 
@@ -69,7 +77,8 @@ public class ProvinceService {
         Province province = provinceRepository.findById(id).orElseThrow(NotFoundException::new);
          */
 
-        Province province = provinceRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+        Province province = provinceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found ID: "+id));
         provinceRepository.delete(province);
     }
 
