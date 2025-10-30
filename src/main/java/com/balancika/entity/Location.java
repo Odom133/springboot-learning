@@ -9,7 +9,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
         name = "location",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "warehouse_id"})}
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "unique_check",
+                        columnNames = {"name", "warehouse_id"}
+                )
+        },
+        indexes = {
+                @Index(name = "warehouse_id", columnList = "warehouseName")
+        }
 )
 @Data
 @NoArgsConstructor

@@ -6,8 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
-@Table(name = "warehouse")
+@Table(
+        name = "warehouse",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "unique_check",
+                        columnNames = {"name", "province_id"}
+                )
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +28,8 @@ public class Warehouse {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    @Column(name = "province_id", columnDefinition = "DEFAULT 1")
+    private Long provinceId;
+
 }

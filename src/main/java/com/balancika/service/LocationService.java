@@ -11,6 +11,7 @@ import com.balancika.model.request.LocationCreateRequest;
 import com.balancika.repository.LocationRepository;
 import com.balancika.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,30 +63,33 @@ public class LocationService {
     }
 
     @Transactional
-    public LocationDTO create(LocationCreateRequest request) {
-        // 1. Check if warehouse exists
-        if (!warehouseRepository.existsById(request.getWarehouseId())) {
-            throw new WarehouseNotFoundException(request.getWarehouseId());
+    public LocationDTO create(LocationCreateRequest payload) {
+        // 1. Check warehouse not found
+        if (!warehouseRepository.existsById(payload.getWarehouseId())) {
+            throw new WarehouseNotFoundException(payload.getWarehouseId());
         }
 
         // 2. Check duplicate location (same name + warehouseId)
         boolean exists = locationRepository.exists(
                 Example.of(Location.builder()
-                        .name(request.getName())
-                        .warehouseId(request.getWarehouseId())
+                        .name(payload.getName())
+                        .warehouseId(payload.getWarehouseId())
                         .build())
         );
         if (exists) {
-            throw new LocationExistedException("Location already exists for this warehouse");
+            throw new DuplicateKeyException(
+              String.format("Location with name '%s' already exists in warehouse %d",
+                      payload.getName(), payload.getWarehouseId())
+            );
         }
 
         // 3. Save location
         Location saved = locationRepository.save(Location.builder()
-                .name(request.getName())
-                .warehouseId(request.getWarehouseId())
+                .name(payload.getName())
+                .warehouseId(payload.getWarehouseId())
                 .build());
 
-        String warehouseName = warehouseRepository.findById(request.getWarehouseId())
+        String warehouseName = warehouseRepository.findById(payload.getWarehouseId())
                 .map(Warehouse::getName)
                 .orElse("Unknown");
 
@@ -98,34 +102,39 @@ public class LocationService {
     }
 
     @Transactional
-    public LocationDTO update(Long id, LocationCreateRequest request) {
+    public LocationDTO update(Long id, LocationCreateRequest payload) {
         // 1. Check if the location exists
-        Location existing = locationRepository.findById(id)
+        Location location = locationRepository.findById(id)
                 .orElseThrow(() -> new LocationNotFoundException(id));
 
         // 2. check if warehouse exists
-        boolean warehouseExists = warehouseRepository.existsById(request.getWarehouseId());
+        boolean warehouseExists = warehouseRepository.existsById(payload.getWarehouseId());
         if (!warehouseExists) {
-            throw new WarehouseNotFoundException(request.getWarehouseId());
+            throw new WarehouseNotFoundException(payload.getWarehouseId());
         }
 
         // 3. Check duplicate ( Same name + warehouseId but different ID)
-        boolean duplicate = locationRepository.findAll(
+        boolean duplicate = locationRepository.exists(
                 Example.of(Location.builder()
-                        .name(request.getName())
-                        .warehouseId(request.getWarehouseId())
-                        .build())
-        ).stream()
-        .anyMatch(loc -> !loc.getId().equals(id));
+                        .name(payload.getName())
+                        .warehouseId(payload.getWarehouseId())
+                        .build()));
+        if (duplicate && !(location.getName().equals(payload.getName()) &&
+                location.getWarehouseId().equals(payload.getWarehouseId()))) {
+            throw new DuplicateKeyException(
+                    String.format("Location with name '%s' already in warehouse Id %d",
+                            payload.getName(), payload.getWarehouseId())
+            );
+        }
 
-        // 4. Update the existing location
-        existing.setName(request.getName());
-        existing.setWarehouseId(request.getWarehouseId());
+        // 4. Update the location
+        location.setName(payload.getName());
+        location.setWarehouseId(payload.getWarehouseId());
 
-        Location updated = locationRepository.save(existing);
+        Location updated = locationRepository.save(location);
 
         // 5. Map to DTO ( include warehouse name )
-        String warehouseName = warehouseRepository.findById(request.getWarehouseId())
+        String warehouseName = warehouseRepository.findById(payload.getWarehouseId())
                 .map(Warehouse::getName)
                 .orElse("Unknown");
 

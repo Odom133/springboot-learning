@@ -13,9 +13,12 @@ import lombok.NoArgsConstructor;
 public class WarehouseDTO {
     private Long id;
     private String name;
+    private Long provinceId;
+    private String provinceName;
 
-    public WarehouseDTO(Warehouse warehouse) {
+    public WarehouseDTO(Warehouse warehouse){
         this.id = warehouse.getId();
         this.name = warehouse.getName();
+        this.provinceId = warehouse.getProvinceId();
     }
 }

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class WarehouseCreateRequest {
     private String name;
+    private Long provinceId;
 }

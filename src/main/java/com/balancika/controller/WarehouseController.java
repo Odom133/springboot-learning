@@ -35,5 +35,17 @@ public class WarehouseController {
         return warehouseService.create(payload);
     }
 
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public WarehouseDTO update(@PathVariable("id") Long id, @RequestBody WarehouseCreateRequest payload) {
+        return warehouseService.update(id, payload);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") Long id) {
+        warehouseService.delete(id);
+    }
+
 
 }

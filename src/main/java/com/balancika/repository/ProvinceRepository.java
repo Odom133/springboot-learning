@@ -11,6 +11,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
 //    @Query("SELECT p FROM Province p WHERE p.id LIKE ?1% OR p.name LIKE %?2%")
     Page<Province> findAll(Pageable pageable);
 
+    boolean existsById(Long id);
     boolean existsByName(String name);
-//    boolean existsByNameAndIdNot(String name,Long id);
+    boolean existsByNameAndIdNot(String name,Long id);
 }
