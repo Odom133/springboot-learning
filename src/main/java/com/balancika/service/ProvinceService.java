@@ -45,7 +45,7 @@ public class ProvinceService {
         }
          */
         if (provinceRepository.existsByName(payload.getName())){
-            throw new ResourceNotFoundException("Province name already exists: "+payload.getName());
+            throw new ResourceNotFoundException(String.format("Province name already exists: %s",payload.getName()));
         }
         return new ProvinceDTO(provinceRepository.save(Province.builder()
                 .name(payload.getName())
