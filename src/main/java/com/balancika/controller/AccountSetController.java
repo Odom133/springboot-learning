@@ -17,18 +17,12 @@ public class AccountSetController {
     private final AccountSetService accountSetService;
     private final ItemGroupRepository itemGroupRepository;
 
-    /**
-     * List account templates (accountId may be null)
-     */
     @GetMapping("/templates")
     public ResponseEntity<List<AccountSetDTO>> listTemplates(@RequestParam("type") String itemType) {
         List<AccountSetDTO> templates = accountSetService.getAllTemplatesAsDTO(itemType);
         return ResponseEntity.ok(templates);
     }
 
-    /**
-     * Generate AccountSets for an ItemGroup
-     */
     @GetMapping("/")
     public ResponseEntity<List<AccountSetDTO>> listAccountSetByType(@RequestParam("type") String type, @RequestParam(name = "id", required = false) String id) {
         return ResponseEntity.ok(accountSetService.listAccountSetByType(id, type));

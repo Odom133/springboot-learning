@@ -13,7 +13,7 @@ import java.util.List;
         name = "warehouse",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "unique_check",
+                        name = "warehouse_unique_check",
                         columnNames = {"name", "province_id"}
                 )
         })

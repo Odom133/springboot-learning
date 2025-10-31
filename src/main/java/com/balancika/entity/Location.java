@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
         name = "location",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "unique_check",
+                        name = "location_unique_check",
                         columnNames = {"name", "warehouse_id"}
                 )
         },

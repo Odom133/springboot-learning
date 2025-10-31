@@ -7,7 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "itemgroup")
+@Table(
+        name = "item_group",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "item_group_unique_check",
+                        columnNames = {"var_id", "var_name"}
+                )
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +37,7 @@ public class ItemGroup {
     @Column(name = "var_desc")
     private String description;
 
-    @Column(name = "tin_inactive", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Boolean inactive = false;
+    @Column(name = "tin_inactive")
+    private Boolean inactive;
 }
 

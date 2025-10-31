@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "provinces",
+@Table(name = "province",
         uniqueConstraints = {
             @UniqueConstraint(
-                    name = "unique_check",
+                    name = "province_unique_check",
                     columnNames = {"name"}
             )
         }

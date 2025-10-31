@@ -19,9 +19,6 @@ public class ItemGroupService {
     private final ItemGroupRepository itemGroupRepository;
     private final AccountSetService accountSetService;
 
-    // ------------------------------
-    // Create new ItemGroup and generate AccountSets
-    // ------------------------------
     @Transactional
     public ItemGroupDTO create(ItemGroupRequest request) {
         ItemGroup itemGroup = new ItemGroup();
@@ -33,15 +30,9 @@ public class ItemGroupService {
 
         ItemGroup saved = itemGroupRepository.save(itemGroup);
 
-        // Generate account sets based on type
-//        accountSetService.generateAccountSetsForItemGroup(saved);
-
         return mapToDTO(saved);
     }
 
-    // ------------------------------
-    // Update existing ItemGroup
-    // ------------------------------
     @Transactional
     public ItemGroupDTO update(Long id, ItemGroupRequest request) {
         ItemGroup itemGroup = itemGroupRepository.findById(id)
@@ -55,15 +46,9 @@ public class ItemGroupService {
 
         ItemGroup saved = itemGroupRepository.save(itemGroup);
 
-        // Optional: regenerate account sets or skip
-//        accountSetService.generateAccountSetsForItemGroup(saved);
-
         return mapToDTO(saved);
     }
 
-    // ------------------------------
-    // List all ItemGroups
-    // ------------------------------
     public List<ItemGroupDTO> listAll() {
         return itemGroupRepository.findAll()
                 .stream()
@@ -72,7 +57,7 @@ public class ItemGroupService {
     }
 
     // ------------------------------
-    // Helper to convert entity to DTO
+    // Helper  entity convert to DTO
     // ------------------------------
     private ItemGroupDTO mapToDTO(ItemGroup itemGroup) {
         return ItemGroupDTO.builder()
