@@ -20,7 +20,7 @@ public class SaleMapper {
         );
 
         List<SaleDetailDTO> detailDTOs = sale.getSaleDetails().stream()
-                .map(detail -> new SaleDetailDTO(detail.getItemName(), detail.getQuantity(), detail.getPrice()))
+                .map(detail -> new SaleDetailDTO(detail.getId(), detail.getItemName(), detail.getQuantity(), detail.getPrice()))
                 .collect(Collectors.toList());
 
         return new SaleResponseDTO(sale.getId(), sale.getSaleDate(), customerDTO, detailDTOs);

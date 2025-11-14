@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 
 public class SaleDetailDTO {
+    private Long id;
     private String itemName;
     private Integer quantity;
     private Double price;

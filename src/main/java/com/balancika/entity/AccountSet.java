@@ -7,7 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "account_set")
+@Table(
+        name = "account_set",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "account_set_unique_check",
+                        columnNames = {"var_type", "var_groupid", "var_subgroupid"}
+                )
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

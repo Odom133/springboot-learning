@@ -29,7 +29,7 @@ public class Sale {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleDetails> saleDetails = new ArrayList<>();
 
     public void  addSaleDetail(SaleDetails saleDetails) {

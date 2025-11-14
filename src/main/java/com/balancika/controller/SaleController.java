@@ -23,12 +23,6 @@ public class SaleController {
     private final SaleService saleService;
     private final SaleMapper saleMapper;
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public ResponseEntity<Sale> insertSale(@RequestBody SaleDTO dto) {
-//        Sale savedSale = saleService.saveSale(dto);
-//        return ResponseEntity.ok(savedSale);
-//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -36,6 +30,13 @@ public class SaleController {
         Sale savedSale = saleService.saveSale(dto);
         SaleResponseDTO response = saleMapper.toResponseDTO(savedSale);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public SaleResponseDTO update(@PathVariable("id") Long id, @RequestBody SaleDTO request) {
+        Sale updated = saleService.updateSale(id, request);
+        return saleMapper.toResponseDTO(updated);
     }
 
     @GetMapping
