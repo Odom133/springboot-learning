@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,20 +22,19 @@ public class SaleController {
     private final SaleService saleService;
     private final SaleMapper saleMapper;
 
-
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<SaleResponseDTO> insertSale(@RequestBody SaleDTO dto) {
-        Sale savedSale = saleService.saveSale(dto);
-        SaleResponseDTO response = saleMapper.toResponseDTO(savedSale);
-        return ResponseEntity.ok(response);
+    public SaleResponseDTO createSale(@RequestBody SaleDTO request) {
+        Sale savedSale = saleService.createSale(request);
+        return saleMapper.toResponseDTO(savedSale);
+
+
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public SaleResponseDTO update(@PathVariable("id") Long id, @RequestBody SaleDTO request) {
-        Sale updated = saleService.updateSale(id, request);
-        return saleMapper.toResponseDTO(updated);
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") Long id) {
+        saleService.delete(id);
     }
 
     @GetMapping
