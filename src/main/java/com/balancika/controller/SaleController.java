@@ -4,7 +4,9 @@ import com.balancika.Mapper.SaleMapper;
 import com.balancika.entity.Sale;
 import com.balancika.model.dto.PaginationDTO;
 import com.balancika.model.dto.Sale.SaleDTO;
+import com.balancika.model.dto.Sale.SaleDetailDTO;
 import com.balancika.model.dto.Sale.SaleResponseDTO;
+import com.balancika.model.request.SaleRequest;
 import com.balancika.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +32,16 @@ public class SaleController {
 
 
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SaleResponseDTO> updateSale(
+            @PathVariable Long id,
+            @RequestBody SaleRequest request) {
+
+        SaleResponseDTO updatedSale = saleService.updateSale(id, request);
+        return ResponseEntity.ok(updatedSale);
+    }
+
 
 
     @DeleteMapping("/{id}")

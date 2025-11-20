@@ -1,11 +1,15 @@
 package com.balancika.service;
 
 import com.balancika.Exception.ResourceNotFoundException;
+import com.balancika.Mapper.SaleMapper;
 import com.balancika.entity.Customer;
 import com.balancika.entity.Sale;
 import com.balancika.entity.SaleDetails;
 import com.balancika.model.dto.Sale.SaleDTO;
 import com.balancika.model.dto.Sale.SaleDetailDTO;
+import com.balancika.model.dto.Sale.SaleResponseDTO;
+import com.balancika.model.request.SaleDetailsRequest;
+import com.balancika.model.request.SaleRequest;
 import com.balancika.repository.CustomerRepository;
 import com.balancika.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,7 @@ public class SaleService {
 
     private final SaleRepository saleRepository;
     private final CustomerRepository customerRepository;
+    private final SaleMapper saleMapper;
 
     @Transactional
     public Sale createSale(SaleDTO dto) {
